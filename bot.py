@@ -12,9 +12,9 @@ load_dotenv()
 TOKEN    = os.getenv("BOT_TOKEN")
 GUILD_IDS = [1328643055632384092, 1541812030191968338]
 
-API_URL  = os.getenv("API_URL") or "https://prtvshow.online/api_admin.php"
-API_KEY  = os.getenv("API_KEY") or "TX999_API_88d9a44fdc05493049f24dc831119d98"
-APP_ID   = os.getenv("APP_ID") or "9f087d585fbd666572fc24b7"
+API_URL  = "https://prtvshow.online/api_admin.php"
+API_KEY  = "TX999_API_88d9a44fdc05493049f24dc831119d98"
+APP_ID   = "9f087d585fbd666572fc24b7"
 
 intents = discord.Intents.default()
 intents.message_content = True
