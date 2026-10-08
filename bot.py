@@ -10,7 +10,7 @@ load_dotenv()
 # TerminalX999 - Standard License Key Discord Bot (Python)
 # ==========================================
 TOKEN    = os.getenv("BOT_TOKEN")
-GUILD_ID = int(os.getenv("GUILD_ID", "1328643055632384092"))
+GUILD_IDS = [1328643055632384092, 1541812030191968338]
 
 API_URL  = os.getenv("API_URL", "https://prtvshow.online/api_admin.php")
 API_KEY  = os.getenv("API_KEY", "TX999_API_88d9a44fdc05493049f24dc831119d98")
@@ -23,13 +23,14 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user.name} (ID: {bot.user.id})")
-    try:
-        guild = discord.Object(id=GUILD_ID)
-        bot.tree.copy_global_to(guild=guild)
-        synced = await bot.tree.sync(guild=guild)
-        print(f"Synced {len(synced)} slash commands.")
-    except Exception as e:
-        print(f"Failed to sync commands: {e}")
+    for g_id in GUILD_IDS:
+        try:
+            guild = discord.Object(id=g_id)
+            bot.tree.copy_global_to(guild=guild)
+            synced = await bot.tree.sync(guild=guild)
+            print(f"Synced {len(synced)} slash commands to guild {g_id}.")
+        except Exception as e:
+            print(f"Failed to sync commands to guild {g_id}: {e}")
 
 # ── Global Interaction Listener for Persistent UI Buttons ──
 @bot.event
