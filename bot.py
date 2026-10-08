@@ -41,12 +41,13 @@ async def on_interaction(interaction: discord.Interaction):
             action, key = custom_id.split(":", 1)
             await interaction.response.defer(ephemeral=True)
             try:
-                resp = requests.post(API_URL, json={"api_key": API_KEY, "action": action, "key": key}, timeout=10)
+                params = {"action": action, "api_key": API_KEY, "key": key}
+                resp = requests.get(API_URL, params=params, timeout=10)
                 data = resp.json()
                 if data.get("success"):
                     await interaction.followup.send(f"✓ Action **{action}** completed for key: `{key}`", ephemeral=True)
                 else:
-                    await interaction.followup.send(f"❌ Failed: {resp.json().get('message')}", ephemeral=True)
+                    await interaction.followup.send(f"❌ Failed: {data.get('message')}", ephemeral=True)
             except Exception as e:
                 await interaction.followup.send(f"⚠️ Error: {str(e)}", ephemeral=True)
 
@@ -54,7 +55,6 @@ async def on_interaction(interaction: discord.Interaction):
 @bot.tree.command(name="genkey", description="Generate a license key remotely.")
 @discord.app_commands.choices(package=[
          discord.app_commands.Choice(name="AIMSILENT EXE", value="affc8da8fd5ace99981ab877")
-       
     ])
 @discord.app_commands.describe(
     package="Select the target package",
@@ -63,12 +63,12 @@ async def on_interaction(interaction: discord.Interaction):
 )
 async def genkey(interaction: discord.Interaction, package: str, days: int = 30, count: int = 1):
     await interaction.response.defer(ephemeral=False)
-    payload = {"api_key": API_KEY, "action": "generate_key", "app_id": APP_ID, "package_id": package, "days": days, "count": count}
+    params = {"action": "generate_key", "api_key": API_KEY, "app_id": APP_ID, "package_id": package, "days": days, "count": count}
     try:
-        resp = requests.post(API_URL, json=payload, timeout=10)
+        resp = requests.get(API_URL, params=params, timeout=10)
         data = resp.json()
         if data.get("success"):
-            keys = data.get("data", {}).get("keys", [])
+            keys = data.get("keys") or data.get("data", {}).get("keys", [])
             dur = "Lifetime" if days == 0 else f"{days} Days"
             embed = discord.Embed(title="🔑 Keys Generated", description=f"Generated {len(keys)} key(s)\nDuration: {dur}", color=0xdc2626)
             embed.add_field(name="Keys", value="\n".join([f"`{k}`" for k in keys]))
