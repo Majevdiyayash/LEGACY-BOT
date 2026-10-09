@@ -54,7 +54,8 @@ async def on_interaction(interaction: discord.Interaction):
 # ── Command: Generate License Key ──
 @bot.tree.command(name="genkey", description="Generate a license key remotely.")
 @discord.app_commands.choices(package=[
-         discord.app_commands.Choice(name="AIMSILENT EXE", value="affc8da8fd5ace99981ab877")
+         discord.app_commands.Choice(name="AIMSILENT EXE", value="affc8da8fd5ace99981ab877"),
+         discord.app_commands.Choice(name="UID BYPASS", value="cb921031dc43197e8ccb6828")
     ])
 @discord.app_commands.describe(
     package="Select the target package",
