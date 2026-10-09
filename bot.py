@@ -23,7 +23,6 @@ class LicenseBot(commands.Bot):
         super().__init__(command_prefix="!", intents=intents)
 
     async def setup_hook(self):
-        # Bot startup par instant guild sync (Rate-limit safe)
         guild = discord.Object(id=GUILD_ID)
         self.tree.copy_global_to(guild=guild)
         synced = await self.tree.sync(guild=guild)
@@ -58,8 +57,8 @@ async def on_interaction(interaction: discord.Interaction):
                 await interaction.followup.send(f"⚠️ Error: {str(e)}", ephemeral=True)
             return
 
-    # 2. IMPORTANT: Forward slash commands to bot tree (Without this, slash commands break!)
-    await bot.tree.invoke(interaction)
+    # 2. Forward slash commands to command tree
+    await bot.tree._dispatch_to_raw_targets(interaction)
 
 # ── Command: Generate License Key ──
 @bot.tree.command(name="genkey", description="Generate a license key remotely.")
