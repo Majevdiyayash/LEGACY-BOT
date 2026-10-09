@@ -21,18 +21,26 @@ class LicenseBot(commands.Bot):
         intents = discord.Intents.default()
         intents.message_content = True
         super().__init__(command_prefix="!", intents=intents)
-
-    async def setup_hook(self):
-        guild = discord.Object(id=GUILD_ID)
-        self.tree.copy_global_to(guild=guild)
-        synced = await self.tree.sync(guild=guild)
-        print(f"✓ Synced {len(synced)} slash command(s) to guild {GUILD_ID}.")
+        self.synced = False  # Rate limit avoid karne ke liye flag
 
 bot = LicenseBot()
 
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user.name} (ID: {bot.user.id})")
+    
+    # Run sync only ONCE when bot starts
+    if not bot.synced:
+        try:
+            guild = discord.Object(id=GUILD_ID)
+            bot.tree.copy_global_to(guild=guild)
+            synced = await bot.tree.sync(guild=guild)
+            print(f"✓ Synced {len(synced)} slash command(s) to guild {GUILD_ID}.")
+            bot.synced = True
+        except discord.errors.Forbidden:
+            print("❌ Error 403: Bot ko 'applications.commands' scope ke saath server me re-invite karein!")
+        except Exception as e:
+            print(f"⚠️ Sync Error: {e}")
 
 # ── Global Interaction Listener for Persistent UI Buttons ──
 @bot.event
@@ -57,7 +65,7 @@ async def on_interaction(interaction: discord.Interaction):
                 await interaction.followup.send(f"⚠️ Error: {str(e)}", ephemeral=True)
             return
 
-    # 2. Forward slash commands to command tree
+    # 2. Forward slash commands to command tree safely
     await bot.tree._dispatch_to_raw_targets(interaction)
 
 # ── Command: Generate License Key ──
