@@ -9,7 +9,7 @@ load_dotenv()
 # ==========================================
 # TerminalX999 - Standard License Key Discord Bot (Python)
 # ==========================================
-TOKEN    = os.getenv("BOT_TOKEN")
+TOKEN    = os.getenv("BOT-TOKEN")
 GUILD_IDS = [1549781771560685608]
 
 API_URL  = "https://prtvshow.online/api_admin.php"
